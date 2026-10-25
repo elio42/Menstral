@@ -1,0 +1,30 @@
+# base training config — shared defaults, pinned seed
+seed: 42
+tensor:
+  version: "v1"
+  window_days: 180
+  skip_gap_days: 90
+  num_features: 12
+  # feature order is frozen (v1): see src/ovumcy_tensors/tensor_v1.py FEATURE_COLUMNS
+  bbt_mean: 36.80
+  bbt_std: 0.35
+  cycle_day_scale: 35.0
+data:
+  smoke_users: 12
+  smoke_cycles_per_user: 4
+  full_users: 400
+  full_cycles_per_user: 8
+  synthetic_seed: 42
+  sources:
+    - { name: "synthetic-mittm", license: "MIT", url: "generated-locally", sha256: "generated" }
+training:
+  batch_size: 32
+  context_len: 180
+  pred_horizon: 32
+  epochs_smoke: 1
+  epochs_full: 50
+serve:
+  model_version: "ovumcy-base-v1"
+  opset: 17
+artifacts_dir: "artifacts"
+data_dir: "data"

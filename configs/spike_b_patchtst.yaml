@@ -1,0 +1,24 @@
+# Spike B — PatchTST-tiny 1-2M from scratch + augmentation
+_base_: "base.yaml"
+seed: 42
+track: "B-patchtst-tiny"
+model:
+  d_model: 160
+  n_heads: 4
+  n_layers: 4
+  patch_len: 16
+  stride: 8
+  dropout: 0.1
+  params_target: "1-2M"
+augmentation:
+  - "jitter:0.05"
+  - "tsmix:p=0.3"
+  - "mask:0.1"
+learning_rate: 0.0005
+batch_size: 64
+epochs_full: 80
+exit_criteria:
+  mae_vs_baseline_delta: -0.5
+  wilcoxon_p: 0.05
+  coverage_80: 0.80
+  coverage_90: 0.90

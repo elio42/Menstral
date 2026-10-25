@@ -1,0 +1,33 @@
+# Mixed v2 — PatchTST-tiny from scratch on synthetic + Fehring (Phase B step 6)
+_base_: "spike_b_patchtst.yaml"
+seed: 42
+track: "mixed-v2-patchtst"
+tensor:
+  version: "v2"
+  window_days: 180
+  skip_gap_days: 90
+  num_features: 14
+  # feature order is frozen (v2): v1 12 cols + peak/peak_missing
+  # (src/ovumcy_tensors/tensor_v2.py FEATURE_COLUMNS)
+  bbt_mean: 36.80
+  bbt_std: 0.35
+  cycle_day_scale: 35.0
+model:
+  n_channels: 14
+data:
+  full_users: 400
+  full_cycles_per_user: 8
+  synthetic_seed: 42
+  fehring_csv: "data/fehring_raw.csv"
+  skip_postpartum_train: true
+training:
+  batch_size: 32
+  context_len: 180
+  pred_horizon: 32
+  epochs_smoke: 1
+  epochs_full: 80
+serve:
+  model_version: "ovumcy-mixed-v2 (PENDING — filled on release)"
+  opset: 17
+artifacts_dir: "artifacts/mixed_v2"
+data_dir: "data"

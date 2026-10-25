@@ -1,0 +1,28 @@
+# Shared-bridge sidecar: internal only. No published ports by design.
+# The app reaches it at http://predictor:8000 (PREDICTOR_URL). Auth is the
+# shared bearer token; no TLS on this net (matches Plan A).
+services:
+  predictor:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+      args:
+        MODEL_DIR: ${MODEL_DIR:-artifacts}
+    image: ovumcy/predictor:dev
+    container_name: ovumcy-predictor
+    expose:
+      - "8000"
+    environment:
+      - PREDICTOR_TOKEN=${PREDICTOR_TOKEN:-}
+      - MODEL_VERSION=${MODEL_VERSION:-ovumcy-base-v1}
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    # NOTE: no `ports:` stanza on purpose. `docker compose config` must show
+    # no published ports for this service.

@@ -1,0 +1,31 @@
+# CPU-only sidecar image (no training code, no corpus in image).
+FROM python:3.11-slim AS base
+LABEL org.opencontainers.image.title="ovumcy-predictor" \
+      org.opencontainers.image.source="https://github.com/elio42/Menstral"
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PORT=8000
+
+# Pinned runtime deps (no torch in the serving image; onnxruntime CPU only).
+COPY pyproject.toml /app/pyproject.toml
+WORKDIR /app
+RUN pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" \
+    "pydantic>=2.6" "numpy>=1.26" "onnxruntime>=1.18" "pyyaml>=6.0" \
+    "python-dateutil>=2.9" && rm -rf /root/.cache
+
+# MODEL_DIR selects the model bundle: default builds today's v1 image;
+# --build-arg MODEL_DIR=artifacts/mixed_v2 builds the v2 (mixed weights +
+# libido-peak columns) image. The layout inside the image stays identical so
+# the serve app needs no path changes.
+ARG MODEL_DIR=artifacts
+COPY src/ /app/src/
+COPY ${MODEL_DIR}/model.onnx /app/artifacts/model.onnx
+COPY ${MODEL_DIR}/normalizer.json /app/artifacts/normalizer.json
+COPY model_card.md /app/artifacts/model_card.md
+
+RUN useradd -r -u 10001 predictor && chown -R predictor /app
+USER 10001:10001
+
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD python -c "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=4).status==200 else 1)"
+
+CMD ["uvicorn", "src.ovumcy_serve.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Menstral training outputs (reproduced by retrain.sh, never committed)
+data/
+artifacts/
+exports/
+.env

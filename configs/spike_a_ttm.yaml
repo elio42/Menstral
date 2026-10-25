@@ -1,0 +1,20 @@
+# Spike A — finetune IBM TTM-R2.1-small on pooled daily tensors
+_base_: "base.yaml"
+seed: 42
+track: "A-ttm-r2.1-small"
+# Verified 2026-10-24: ttm-r2 (public, Apache-2.0) exists; the -small id is
+# gated (HF 401, needs HF_TOKEN). Order matters: first reachable wins.
+base_checkpoint: "ibm-granite/granite-timeseries-ttm-r2"  # Apache-2.0, public
+fallback_checkpoints:
+  - "ibm-granite/granite-timeseries-ttm-r2-small"  # needs HF_TOKEN (gated)
+context_len: 512        # daily points; tensors are 180d so we pad to 512 ctx
+pred_horizon: 32        # next-onset + fertile window live inside 32d horizon
+frozen: true            # stage-1: finetune head only; unfreeze after smoke
+learning_rate: 0.0001
+batch_size: 32
+epochs_full: 30
+exit_criteria:
+  mae_vs_baseline_delta: -0.5   # must beat baseline by 0.5d
+  wilcoxon_p: 0.05
+  coverage_80: 0.80
+  coverage_90: 0.90

@@ -1,0 +1,32 @@
+{
+  "model_version": "ovumcy-base-v1 (PENDING — filled on release)",
+  "seed": 42,
+  "access_date": "PENDING",
+  "sources": [
+    {
+      "name": "synthetic-mittm",
+      "url": "generated-locally",
+      "license": "MIT",
+      "sha256": "generated",
+      "note": "pooled pre-training; deterministic under seed 42"
+    },
+    {
+      "name": "fehring-marquette-1665",
+      "url": "licensed-copy-only-never-bundled",
+      "license": "research-OK-do-not-redistribute",
+      "sha256": "9fa76583129db58af44adb21a0612217b207120fb61d478fb343a61291732a89",
+      "access_date": "2026-10-25",
+      "seed": 42,
+      "note": "Phase A EDA+eval and Phase B mixed retrain (1649/1665 rows kept after dedup; postpartum cutoffs excluded from train only); never CSV in repo"
+    },
+    {
+      "name": "mcphases-physionet-restricted",
+      "url": "restricted",
+      "license": "restricted-eval-only",
+      "sha256": "n/a",
+      "note": "EVAL-ONLY: never contributes to shipped weights"
+    }
+  ],
+  "forbidden": ["CC BY-NC/ND", "TimeGPT-closed", "Moirai-NC", "TimesFM-3.0-NC", "Sympto/Clue-closed"],
+  "personal_corpus": "local exports/json only, never uploaded, never committed"
+}

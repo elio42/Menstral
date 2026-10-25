@@ -1,0 +1,17 @@
+# Personal layer — context-only vs LoRA-r4 nightly CPU
+_base_: "base.yaml"
+seed: 42
+policy:
+  frozen_base_n_lt: 6          # n<6: frozen base, no adapter
+  context_covariates_n: "3-12" # n=3-12: context + covariates, no weights written
+  adapter_n_gte: 12            # n>=12: tiny adapter nightly CPU (spike uses n>=6 to decide)
+spike:
+  min_cycles: 6
+  lora_r: 4
+  lora_alpha: 8
+  max_cpu_seconds_per_user: 60
+  adapter_budget_bytes: 2048   # 2KB store per user
+metrics:
+  - "personal_mae_delta"
+  - "cpu_s_per_user"
+  - "adapter_bytes"
